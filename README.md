@@ -1,27 +1,73 @@
 # Week 7 - Naming and Service Discovery Assignment
 
 ## Overview
-This project demonstrates service discovery in a microservices architecture using Spring Boot and Netflix Eureka.
 
-The system contains:
-- Eureka Server as the service registry
-- hello-service running as 2 instances
-- client-service that discovers HELLO-SERVICE dynamically and calls a random instance
+This project demonstrates **service discovery in a microservices architecture** using **Spring Boot** and **Netflix Eureka**.
+
+The system includes:
+
+* **Eureka Server** as the service registry
+* **hello-service** running with **2 instances**
+* **client-service** that discovers `HELLO-SERVICE` dynamically and calls a random instance
+
+---
+
+## Architecture Diagram
+
+```mermaid
+flowchart TB
+    subgraph Registry
+        E[Eureka Server<br/>Port: 8761<br/>Service Registry]
+    end
+
+    subgraph Services
+        H1[hello-service<br/>Instance 1<br/>Port: 8081<br/>GET /hello]
+        H2[hello-service<br/>Instance 2<br/>Port: 8082<br/>GET /hello]
+    end
+
+    subgraph Client
+        C[client-service<br/>Port: 8080<br/>GET /call]
+    end
+
+    H1 -->|register| E
+    H2 -->|register| E
+    C -->|discover HELLO-SERVICE| E
+    C -->|random call to /hello| H1
+    C -->|random call to /hello| H2
+```
+
+---
+
+## Architecture Explanation
+
+* The **Eureka Server** (port `8761`) acts as the central service registry.
+* Two instances of **hello-service** run on ports `8081` and `8082`.
+* Both instances **register themselves** with Eureka.
+* The **client-service** (port `8080`) queries Eureka to discover available instances.
+* The client **randomly selects one instance** and calls its `/hello` endpoint.
+
+---
 
 ## Requirements Completed
-- Ran 2 service instances
-- Registered both instances with the Eureka registry
-- Client discovered service instances dynamically
-- Client called a random instance
+
+* Ran **2 service instances**
+* Registered both instances with **Eureka registry**
+* Client discovered services dynamically
+* Client called a **random instance**
+
+---
 
 ## Project Structure
+
 ```text
 week7-service-discovery/
 ├── eureka-server/
 ├── hello-service/
 ├── client-service/
 └── README.md
-````
+```
+
+---
 
 ## Technologies Used
 
@@ -31,89 +77,129 @@ week7-service-discovery/
 * Maven
 * VS Code
 
-## Architecture
+---
 
-* Eureka Server runs on port 8761
-* hello-service instance 1 runs on port 8081
-* hello-service instance 2 runs on port 8082
-* client-service runs on port 8080
+## Services and Ports
 
-## Service Flow
+| Service          | Port | Description              |
+| ---------------- | ---- | ------------------------ |
+| Eureka Server    | 8761 | Service registry         |
+| hello-service #1 | 8081 | Instance 1               |
+| hello-service #2 | 8082 | Instance 2               |
+| client-service   | 8080 | Service discovery client |
 
-1. hello-service instances register with Eureka
-2. client-service queries Eureka for HELLO-SERVICE
-3. client-service selects one instance randomly
-4. client-service calls that instance’s `/hello` endpoint
+---
 
 ## Endpoints
 
-* Eureka Dashboard: `http://localhost:8761`
-* Hello Service Instance 1: `http://localhost:8081/hello`
-* Hello Service Instance 2: `http://localhost:8082/hello`
-* Client Service Call: `http://localhost:8080/call`
+* Eureka Dashboard → [http://localhost:8761](http://localhost:8761)
+* Hello Service (Instance 1) → [http://localhost:8081/hello](http://localhost:8081/hello)
+* Hello Service (Instance 2) → [http://localhost:8082/hello](http://localhost:8082/hello)
+* Client Service → [http://localhost:8080/call](http://localhost:8080/call)
+
+---
 
 ## How to Run
 
-### Start Eureka Server
+### 1. Start Eureka Server
 
 ```bash
 cd eureka-server
 ./mvnw clean spring-boot:run
 ```
 
-### Start Hello Service Instance 1
+---
+
+### 2. Start hello-service (Instance 1)
 
 ```bash
 cd hello-service
 ./mvnw clean spring-boot:run -Dspring-boot.run.arguments=--server.port=8081
 ```
 
-### Start Hello Service Instance 2
+---
+
+### 3. Start hello-service (Instance 2)
 
 ```bash
 cd hello-service
 ./mvnw clean spring-boot:run -Dspring-boot.run.arguments=--server.port=8082
 ```
 
-### Start Client Service
+---
+
+### 4. Start client-service
 
 ```bash
 cd client-service
 ./mvnw clean spring-boot:run
 ```
 
+---
+
 ## Expected Output
 
-Visiting `http://localhost:8080/call` returns alternating responses such as:
+Open:
 
-```text
+```
+http://localhost:8080/call
+```
+
+You should see alternating responses:
+
+```
 Client called -> Hello from instance running on port 8081
 ```
 
 and
 
-```text
+```
 Client called -> Hello from instance running on port 8082
 ```
 
-## Proof of Service Registration
+---
 
-The Eureka dashboard shows:
+## Proof of Service Discovery
 
-* HELLO-SERVICE with 2 registered instances
-* CLIENT-SERVICE with 1 registered instance
+Eureka dashboard shows:
 
-## Deliverables
+* `HELLO-SERVICE` → 2 instances
+* `CLIENT-SERVICE` → 1 instance
 
-* GitHub repository
-* Architecture diagram
-* Demo video
+---
+
+## Demo Flow
+
+1. Start Eureka Server
+2. Start hello-service (2 instances)
+3. Verify both instances in Eureka
+4. Start client-service
+5. Call `/call` endpoint
+6. Observe requests routed to different instances
+
+---
 
 ## Optional Extension
 
-A future enhancement would be to integrate a service mesh such as Istio or Linkerd for:
+This architecture can be extended using a **Service Mesh (Istio / Linkerd)**:
 
-* traffic routing
-* observability
-* security
+```
+App → Sidecar Proxy → Service Mesh → Target Service
+```
+
+### Benefits:
+
+* Traffic routing
+* Observability
+* Security (mTLS)
+
+---
+
+## Summary
+
+This project demonstrates:
+
+* Dynamic service discovery
+* Load balancing via client-side logic
+* Microservices communication without hardcoded endpoints
 
