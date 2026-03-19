@@ -166,6 +166,26 @@ Eureka dashboard shows:
 * `HELLO-SERVICE` → 2 instances
 * `CLIENT-SERVICE` → 1 instance
 
+## Screenshots
+
+### Eureka Dashboard
+![Eureka Dashboard](images/EUREKA.png)
+
+---
+
+### Hello Service Instance 1 (Port 8081)
+![Hello Service 8081](images/hello_service_8081.png)
+
+---
+
+### Hello Service Instance 2 (Port 8082)
+![Hello Service 8082](images/hello_service_8082.png)
+
+---
+
+### Client Service Output (Port 8080)
+![Client Service](images/client_service_8080.png)
+
 ---
 
 ## Demo Flow
